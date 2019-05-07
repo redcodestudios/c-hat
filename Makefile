@@ -2,7 +2,7 @@ src = $(wildcard src/*.c)
 obj = $(src:.c=.o)
 dep = $(obj:.o=.d)  # one dependency file for each source
 
-LDFLAGS = -lGL -lpng -lz -lm
+LDFLAGS = -lGL -lpng -lz -lm -lrt
 
 c-hat: $(obj)
 		$(CC) -o $@ $^ $(LDFLAGS)

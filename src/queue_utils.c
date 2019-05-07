@@ -1,7 +1,4 @@
-#include <errno.h>
-#include <mqueue.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "inc/queue_utils.h"
 
 // Create the user queue with the desired permissions and name conventions.
 mqd_t createQueue(char* userName) {
@@ -48,9 +45,8 @@ mqd_t writeQueue(char* userName){
 }
 
 // Closes an open Queue when it is no longer being used.
-void closeQueue(char* userName) {
-    char* queueName = getQueueName(userName);
-    if (mq_close(queueName) != 0) {
+void closeQueue(mqd_t queue) {
+    if (mq_close(queue) != 0) {
         fprintf(stderr, "Queue name invalid, can't close");
         exit(1);
     }
@@ -91,5 +87,5 @@ char* getQueueName(char* userName) {
 mqd_t findAvailableQueues(char* userName) {
     // TODO: Based on the user name, find all other people available
     // Queue names are 'chat-<username>' on /dev/mqueue/
-    return NULL;
+    return 0;
 }
