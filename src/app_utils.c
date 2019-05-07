@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "inc/utils.h"
+#include "inc/app_utils.h"
 
 
 char* get_str(unsigned int buffer_size){
@@ -17,4 +17,18 @@ char* get_str(unsigned int buffer_size){
     }
 
     return buffer;
+}
+
+/*
+    Sends a message to a user.
+*/
+int send_message(char* sender, char* receiver, char* msg){
+    return 0;
+}
+
+/*
+    Broadcasts a message to all users.
+*/
+int broadcast_message(char* sender, char* msg){
+    return 0;
 }

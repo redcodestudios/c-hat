@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "inc/utils.h"
+#include "inc/app_utils.h"
 
 #define USERNAME_MAX_LEN 10
 #define MSG_MAX_LEN 500
