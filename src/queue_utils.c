@@ -1,7 +1,7 @@
 #include "inc/queue_utils.h"
 
 // Create the user queue with the desired permissions and name conventions.
-mqd_t createQueue(char* userName) {
+mqd_t create_queue(char* user_name) {
     // descritor da fila de mensagens
     mqd_t queue;
     // atributos da fila de mensagens
@@ -13,8 +13,8 @@ mqd_t createQueue(char* userName) {
     attr.mq_msgsize = sizeof(int);  // tamanho de cada mensagem
     attr.mq_flags = 0;
     
-    char* queueName = getQueueName(userName);
-    if ((queue = mq_open(queueName, O_CREAT, 0622, &attr)) < 0) {
+    char* queue_name = get_queue_name(user_name);
+    if ((queue = mq_open(queue_name, O_CREAT, 0622, &attr)) < 0) {
         perror("mq_open");
         exit(1);
     }
@@ -22,10 +22,11 @@ mqd_t createQueue(char* userName) {
 }
 
 // Open the user queue in read mode.
-mqd_t readQueue(char* userName){
+mqd_t read_q(char* user_name){
     mqd_t queue;
-    char* queueName = getQueueName(userName);
-    if ((queue = mq_open(queueName, O_RDONLY)) < 0) {
+    char* queue_name = get_queue_name(user_name);
+    
+    if ((queue = mq_open(queue_name, O_RDONLY)) < 0) {
         perror("mq_open");
         exit(1);
     }
@@ -33,19 +34,20 @@ mqd_t readQueue(char* userName){
 }
 
 // Open the user queue in write mode.
-mqd_t writeQueue(char* userName){
+mqd_t write_q(char* user_name){
     mqd_t queue;
-    char* queueName = getQueueName(userName);
-    if ((queue = mq_open(queueName, O_WRONLY)) < 0) {
+    char* queue_name = get_queue_name(user_name);
+    
+    if ((queue = mq_open(queue_name, O_WRONLY)) < 0) {
         perror("mq_open");
         exit(1);
     }
-    return queue;
 
+    return queue;
 }
 
 // Closes an open Queue when it is no longer being used.
-void closeQueue(mqd_t queue) {
+void close_q(mqd_t queue) {
     if (mq_close(queue) != 0) {
         fprintf(stderr, "Queue name invalid, can't close");
         exit(1);
@@ -53,39 +55,34 @@ void closeQueue(mqd_t queue) {
 }
 
 // Removes the desired user queue,
-void destroyQueue(char* userName) {
-    char* queueName = getQueueName(userName);
-    if (mq_unlink(queueName) != 0) {
+void destroy_q(char* user_name) {
+    char* queue_name = get_queue_name(user_name);
+    
+    if (mq_unlink(queue_name) != 0) {
         switch (errno) {
             case EACCES:
                 fprintf(stderr, "No permission to unlink this message queue\n");
                 break;
             case ENAMETOOLONG:
-                fprintf(stderr, "Queue name too long");
+                fprintf(stderr, "Queue name too long\n");
                 break;
             case ENOENT:
-                fprintf(stderr, "No message queue with given name");
+                fprintf(stderr, "No message queue with given name\n");
                 break;
         }
         exit(1);
     }
 }
 
-// Based on the Username, returns the queue name with the preset prefix.
-char* getQueueName(char* userName) {
+// Based on the username, returns the queue name with the preset prefix.
+char* get_queue_name(char* user_name) {
     const char* prefix = "chat-";
 
-    char* queueName;
-    queueName = malloc(sizeof(prefix) + sizeof(userName));
+    char* queue_name;
+    queue_name = malloc(sizeof(prefix) + sizeof(user_name));
 
-    strcpy(queueName, prefix);
-    strcat(queueName, userName);
+    strcpy(queue_name, prefix);
+    strcat(queue_name, user_name);
 
-    return queueName;
-}
-
-mqd_t findAvailableQueues(char* userName) {
-    // TODO: Based on the user name, find all other people available
-    // Queue names are 'chat-<username>' on /dev/mqueue/
-    return 0;
+    return queue_name;
 }

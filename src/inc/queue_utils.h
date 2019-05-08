@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mqueue.h>
 
-mqd_t createQueue(char* userName);
-mqd_t readQueue(char* userName);
-mqd_t writeQueue(char* userName);
-void closeQueue(mqd_t queue);
-void destroyQueue(char* userName);
-char* getQueueName(char* userName);
-mqd_t findAvailableQueues(char* userName);
+#include <mqueue.h>
+#include <dirent.h>
+#include <sys/types.h>
+
+mqd_t create_q(char* user_name);
+mqd_t read_q(char* user_name);
+mqd_t write_q(char* user_name);
+void close_q(mqd_t queue);
+void destroy_q(char* user_name);
+char* get_queue_name(char* user_name);
