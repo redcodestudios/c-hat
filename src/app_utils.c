@@ -60,7 +60,7 @@ int is_chat(char* str){
 }
 
 
-string_list find_available_users() {
+string_list find_available_chats() {
     struct dirent *entry;
     DIR *dir = opendir("/dev/mqueue/");
     string_list chats; 

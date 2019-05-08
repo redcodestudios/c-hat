@@ -36,4 +36,4 @@ char* get_username(char* str);
 
 int is_chat(char* str);
 
-string_list find_available_users();
+string_list find_available_chats();

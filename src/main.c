@@ -28,7 +28,7 @@ int main(){
     // username = get_str(USERNAME_MAX_LEN);
     // printf("Your username is: %s\n", username);
     // test2();
-    string_list users = find_available_users();
+    string_list users = find_available_chats();
     // printf("%d", sizeof(users)/sizeof(*users));
     // fprintf(stderr, "%d", sizeof(users)/sizeof(char**));
     for(int i=0; i<users.length; i++){
