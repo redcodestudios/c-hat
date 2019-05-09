@@ -16,7 +16,7 @@ char* get_str(unsigned int buffer_size);
 
 
 /* Sends a message to a user. */
-int send_message(char* sender, char* receiver, char* msg, str_array av_chats);
+int send_message(char* sender, char* receiver, char* msg, str_array_t av_chats);
 
 
 /* Broadcasts a message to all users. */
@@ -27,7 +27,7 @@ int broadcast_message(char* sender, char* msg);
     Extract username from a queue name. 
     E.g. chat-user -> return user
 */
-username_t get_username(char* str);
+char* get_username(char* str);
 
 
 /* 
@@ -37,10 +37,10 @@ username_t get_username(char* str);
 int is_chat(char* str);
 
 
-int is_online(char* user, str_array av_users);
+int is_online(char* user, str_array_t av_users);
 
 
 /* Find all chats that are available to sen messages. */
-str_array find_available_chats();
+str_array_t find_available_chats();
 
 #endif

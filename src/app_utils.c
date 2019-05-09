@@ -20,7 +20,7 @@ char* get_str(unsigned int buffer_size){
     return buffer;
 }
 
-int send_message(char* sender, char* receiver, char* msg, str_array av_chats){
+int send_message(char* sender, char* receiver, char* msg, str_array_t av_chats){
     if(is_online(receiver, av_chats)){
         mqd_t q = write_q(receiver);
 
@@ -39,19 +39,15 @@ int broadcast_message(char* sender, char* msg){
     return 0;
 }
 
-username_t get_username(char* str) {
-    // printf("stlen %d\n", strlen(str) - HEADER_LEN);
-    // printf("\n");
-    username_t tmp;
+char* get_username(char* str) {
     int length = strlen(str) - HEADER_LEN;
+    char* tmp = malloc(length);
     
-    tmp.value = malloc(length);
-    tmp.length = length;
     
     for(int i=5,j=0; i<strlen(str); i++, j++){
-        tmp.value[j] = str[i];
+        tmp[j] = str[i];
     }
-    tmp.value[length] = '\0';
+    tmp[length] = '\0';
     return tmp;
 }
 
@@ -69,14 +65,11 @@ int is_chat(char* str){
     return strcmp(tmp, "chat-\0") == 0;
 }
 
-int is_online(char* user, str_array av_chats){
+int is_online(char* user, str_array_t av_chats){
     for(int i=0; i<av_chats.length; i++){
-        // printf("%s\n", user);
-        username_t tmp =  get_username(av_chats.elements[i]);
-        printf("comparing %s with %s\n", user, tmp.value);
-        printf("%d\n", strcmp(user, tmp.value));
-        if(strcmp(user, tmp.value) == 0){
-            printf("aaaaaaaaaaa\n");
+        char* tmp =  get_username(av_chats.elements[i]);
+
+        if(strcmp(user, tmp) == 0){
             return 1;
         }
     }
@@ -84,10 +77,10 @@ int is_online(char* user, str_array av_chats){
 }
 
 
-str_array find_available_chats() {
+str_array_t find_available_chats() {
     struct dirent *entry;
     DIR *dir = opendir("/dev/mqueue/");
-    str_array chats = new_str_array();
+    str_array_t chats = new_str_array();
 
     if(dir == NULL) {
         return chats;

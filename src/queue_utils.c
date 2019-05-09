@@ -1,7 +1,9 @@
 #include "inc/queue_utils.h"
 
+#define MSG_MAX_SIZE 522
+
 // Create the user queue with the desired permissions and name conventions.
-mqd_t create_queue(char* user_name) {
+mqd_t create_q(char* user_name) {
     // descritor da fila de mensagens
     mqd_t queue;
     // atributos da fila de mensagens
@@ -10,11 +12,12 @@ mqd_t create_queue(char* user_name) {
     // capacidade para 10 mensagens
     attr.mq_maxmsg = 10;
     // as mensagens são números inteiros
-    attr.mq_msgsize = sizeof(int);  // tamanho de cada mensagem
+    attr.mq_msgsize = MSG_MAX_SIZE;  // tamanho de cada mensagem
     attr.mq_flags = 0;
     
+    // 00700 | 00020 | 00002
     char* queue_name = get_queue_name(user_name);
-    if ((queue = mq_open(queue_name, O_CREAT, 0622, &attr)) < 0) {
+    if ((queue = mq_open(queue_name, O_CREAT, 00622, &attr)) < 0) {
         perror("mq_open");
         exit(1);
     }
@@ -76,7 +79,7 @@ void destroy_q(char* user_name) {
 
 // Based on the username, returns the queue name with the preset prefix.
 char* get_queue_name(char* user_name) {
-    const char* prefix = "chat-";
+    const char* prefix = "/chat-";
 
     char* queue_name;
     queue_name = malloc(sizeof(prefix) + sizeof(user_name));
