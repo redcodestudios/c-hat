@@ -1,6 +1,8 @@
 #include <dirent.h>
+#include <mqueue.h>
 #include <sys/types.h>
 
+#include "queue_utils.h"
 #include "custom_types.h"
 
 #define HEADER_LEN 5 // chat-

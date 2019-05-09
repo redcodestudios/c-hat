@@ -21,6 +21,13 @@ char* get_str(unsigned int buffer_size){
 }
 
 int send_message(char* sender, char* receiver, char* msg){
+    mqd_t q = write_q(receiver);
+
+    if (mq_send(q, (void *)&msg, sizeof(msg), 0) < 0) {
+        perror("Error sending message");
+        return -1;
+    }
+
     return 0;
 }
 
