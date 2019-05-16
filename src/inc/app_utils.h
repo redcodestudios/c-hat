@@ -15,6 +15,10 @@
 char* get_str(unsigned int buffer_size);
 
 
+/* Safely get a string from the user and returns in lower case. */
+char* get_strl(unsigned int buffer_size);
+
+
 /* Sends a message to a user. */
 int send_message(char* sender, char* receiver, char* msg, str_array_t av_chats);
 

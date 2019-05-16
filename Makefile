@@ -3,9 +3,10 @@ obj = $(src:.c=.o)
 dep = $(obj:.o=.d)  # one dependency file for each source
 
 LDFLAGS = -lGL -lpng -lz -lm -lrt
+THREAD_FLAGS = -pthread
 
 c-hat: $(obj)
-		$(CC) -o $@ $^ $(LDFLAGS)
+		$(CC) -o $@ $^ $(LDFLAGS) $(THREAD_FLAGS)
 
 -include $(dep) # include all dep files in the makefile
 

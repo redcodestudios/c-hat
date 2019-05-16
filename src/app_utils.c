@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "inc/app_utils.h"
+
 
 char* get_str(unsigned int buffer_size){
     char* buffer = malloc(sizeof(char)*buffer_size);
@@ -18,6 +20,15 @@ char* get_str(unsigned int buffer_size){
     }
 
     return buffer;
+}
+
+char* get_strl(unsigned int buffer_size){
+    char* tmp = get_str(buffer_size);
+    
+    for(int i = 0; tmp[i]; i++){
+        tmp[i] = tolower(tmp[i]);
+    }
+    return tmp;
 }
 
 int send_message(char* sender, char* receiver, char* msg, str_array_t av_chats){
