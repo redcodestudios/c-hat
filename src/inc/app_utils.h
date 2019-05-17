@@ -1,6 +1,10 @@
 #ifndef APP_UTILS_H
 #define APP_UTILS_H
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include <dirent.h>
 #include <mqueue.h>
 #include <sys/types.h>
@@ -11,6 +15,12 @@
 #define HEADER_LEN 5 // chat-
 
 
+struct Input {
+    const char* sender;
+    char* receiver;
+    char* msg;
+};
+
 /* Safely get a string from the user. */
 char* get_str(unsigned int buffer_size);
 
@@ -19,8 +29,12 @@ char* get_str(unsigned int buffer_size);
 char* get_strl(unsigned int buffer_size);
 
 
+/* Treat a raw input like "user: hey"  */
+struct Input treat_input(char* raw, const char* sender);
+
+
 /* Sends a message to a user. */
-int send_message(char* sender, char* receiver, char* msg, str_array_t av_chats);
+int send_message(const char* sender, char* receiver, char* msg);
 
 
 /* Broadcasts a message to all users. */

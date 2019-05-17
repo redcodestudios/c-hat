@@ -1,8 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-
 #include "inc/app_utils.h"
 
 
@@ -12,15 +7,16 @@ char* get_str(unsigned int buffer_size){
 
     for(int i=0; i < buffer_size; i++){
         scanf("%c", &tmp);
-        buffer[i] = tmp;        
-        
         if(tmp == '\n') {
+            buffer[i] = '\0';
             break;
         }
+        buffer[i] = tmp;        
     }
 
     return buffer;
 }
+
 
 char* get_strl(unsigned int buffer_size){
     char* tmp = get_str(buffer_size);
@@ -31,24 +27,38 @@ char* get_strl(unsigned int buffer_size){
     return tmp;
 }
 
-int send_message(char* sender, char* receiver, char* msg, str_array_t av_chats){
+
+struct Input treat_input(char* raw, const char* sender){
+    char* receiver;
+    char* msg;
+    receiver = strtok(raw, ": ");
+    msg = strtok(NULL, ": ");
+
+    struct Input i = {sender, receiver, msg};
+    return i;
+}
+
+int send_message(const char* sender, char* receiver, char* msg){
+    str_array_t av_chats = find_available_chats();
+    
     if(is_online(receiver, av_chats)){
         mqd_t q = write_q(receiver);
 
         if (mq_send(q, (void *)&msg, sizeof(msg), 0) < 0) {
-            perror("Error sending message\n");
+            perror("\nError sending message\n");
             return -1;
         }
-
         return 0;
     }
-    perror("User is offiline\n");
+    perror("\nUser is offline\n");
     return -1;
 }
+
 
 int broadcast_message(char* sender, char* msg){
     return 0;
 }
+
 
 char* get_username(char* str) {
     int length = strlen(str) - HEADER_LEN;
@@ -61,6 +71,7 @@ char* get_username(char* str) {
     tmp[length] = '\0';
     return tmp;
 }
+
 
 int is_chat(char* str){
     if(strlen(str) > 15 || strlen(str) < 5){
@@ -75,6 +86,7 @@ int is_chat(char* str){
 
     return strcmp(tmp, "chat-\0") == 0;
 }
+
 
 int is_online(char* user, str_array_t av_chats){
     for(int i=0; i<av_chats.length; i++){
