@@ -38,7 +38,7 @@ int send_message(const char* sender, char* receiver, char* msg);
 
 
 /* Broadcasts a message to all users. */
-int broadcast_message(char* sender, char* msg);
+int broadcast_message(const char* sender, char* msg);
 
 
 /* 

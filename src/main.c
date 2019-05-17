@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include <pthread.h>
 
 #include "inc/menu.h"
@@ -17,11 +18,9 @@ void* receiver_thread(void *p);
 
 void exit_handler(int signum);
 void send_handler(int signum);
+void broadcast_handler(int signum);
 
 struct Input INPUT = {"", ""};
-
-pthread_t sender_tid;
-pthread_t receiver_tid;
 
 int main(){
     signal(SIGINT, exit_handler);
@@ -29,6 +28,9 @@ int main(){
     printf("Type your username: ");
     const char* username = get_str(USERNAME_MAX_LEN);
 
+    pthread_t sender_tid;
+    pthread_t receiver_tid;
+    
     pthread_create(&sender_tid, NULL, &sender_thread, NULL);
     pthread_create(&receiver_tid, NULL, &receiver_thread, NULL);
     
@@ -38,7 +40,12 @@ int main(){
         printf("chat: ");
         raw_input = get_str(SENDING_HEADER_LEN + MSG_MAX_LEN);
         INPUT = treat_input(raw_input, username);
-        pthread_kill(sender_tid, SIGUSR1);
+
+        if(strcmp(INPUT.receiver, "all") == 0){
+            pthread_kill(sender_tid, SIGUSR2);
+        }else{
+            pthread_kill(sender_tid, SIGUSR1);
+        }
         
         // int option  = menu();
         // switch (option){
@@ -77,15 +84,19 @@ void exit_handler(int signum){
 }
 
 void send_handler(int signum){
-    // printf("\n%s:%s\n", INPUT.receiver, INPUT.msg);
     send_message(INPUT.sender, INPUT.receiver, INPUT.msg);
+}
+
+void broadcast_handler(int signum){
+    broadcast_message(INPUT.sender, INPUT.msg);
 }
 
 void* sender_thread(void *p){
     signal(SIGUSR1, send_handler);
+    signal(SIGUSR2, broadcast_handler);
     while(1);
 }
 
 void* receiver_thread(void *p){
-    printf("pablo says: iae\n");
+    printf("\npablo says: iae\n");
 }

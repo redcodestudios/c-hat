@@ -55,7 +55,7 @@ int send_message(const char* sender, char* receiver, char* msg){
 }
 
 
-int broadcast_message(char* sender, char* msg){
+int broadcast_message(const char* sender, char* msg){
     return 0;
 }
 
