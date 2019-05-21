@@ -40,16 +40,16 @@ struct Input treat_input(char* raw, const char* sender){
 }
 
 int send_message(const char* sender, char* receiver, char* msg){
-    // char* new_msg = malloc(522);
-    // strcat(new_msg, sender);
-    // strcat(new_msg, ":");
-    // strcat(new_msg, msg);
+    char* new_msg = malloc(MSG_MAX_SIZE);
+    strcat(new_msg, sender);
+    strcat(new_msg, ": ");
+    strcat(new_msg, msg);
     
     str_array_t av_chats = find_available_chats();
     if(is_online(receiver, av_chats)){
         mqd_t q = write_q(receiver);
 
-        if (mq_send(q, msg, strlen(msg), 0) < 0) {
+        if (mq_send(q, new_msg, strlen(new_msg), 0) < 0) {
             perror("\nError sending message\n");
             return -1;
         }

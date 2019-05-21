@@ -47,12 +47,20 @@ int main(){
     
     while(1){
         raw_input = get_str(SENDING_HEADER_LEN + MSG_MAX_LEN);
-        INPUT = treat_input(raw_input, username);
-
-        if(strcmp(INPUT.receiver, "all") == 0){
-            pthread_kill(sender_tid, SIGUSR2);
+        if(strcmp(raw_input, ":list") == 0){
+            str_array_t online_users = find_available_chats();
+            printf("\n---------- Online users ----------\n");
+            for(int i=0; i<online_users.length; i++){
+                printf("%s\n", get_username(online_users.elements[i]));
+            }
         }else{
-            pthread_kill(sender_tid, SIGUSR1);
+            INPUT = treat_input(raw_input, username);
+
+            if(strcmp(INPUT.receiver, "all") == 0){
+                pthread_kill(sender_tid, SIGUSR2);
+            }else{
+                pthread_kill(sender_tid, SIGUSR1);
+            }
         }
     }
 
@@ -73,7 +81,6 @@ void exit_handler(int signum){
 }
 
 void send_handler(int signum){
-    printf("\naaaaa %s\n", INPUT.msg);
     send_message(INPUT.sender, INPUT.receiver, INPUT.msg);
 }
 
