@@ -1,7 +1,5 @@
 #include "inc/queue_utils.h"
 
-#define MSG_MAX_SIZE 522
-
 // Create the user queue with the desired permissions and name conventions.
 mqd_t create_q(char* user_name) {
     // descritor da fila de mensagens

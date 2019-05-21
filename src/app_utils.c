@@ -27,11 +27,12 @@ char* get_strl(unsigned int buffer_size){
     return tmp;
 }
 
-
 struct Input treat_input(char* raw, const char* sender){
     char* receiver;
     char* msg;
-    receiver = strtok(raw, ": ");
+
+    receiver = strtok(raw, ":");
+    receiver = strtok(NULL, ":");
     msg = strtok(NULL, ": ");
 
     struct Input i = {sender, receiver, msg};
@@ -39,12 +40,16 @@ struct Input treat_input(char* raw, const char* sender){
 }
 
 int send_message(const char* sender, char* receiver, char* msg){
-    str_array_t av_chats = find_available_chats();
+    // char* new_msg = malloc(522);
+    // strcat(new_msg, sender);
+    // strcat(new_msg, ":");
+    // strcat(new_msg, msg);
     
+    str_array_t av_chats = find_available_chats();
     if(is_online(receiver, av_chats)){
         mqd_t q = write_q(receiver);
 
-        if (mq_send(q, (void *)&msg, sizeof(msg), 0) < 0) {
+        if (mq_send(q, msg, strlen(msg), 0) < 0) {
             perror("\nError sending message\n");
             return -1;
         }
@@ -97,6 +102,18 @@ int is_online(char* user, str_array_t av_chats){
         }
     }
     return 0;
+}
+
+int is_valid_username(const char* username){
+    str_array_t av_chats = find_available_chats();
+    
+    if(strcmp(username, "all") == 0){
+        return 0;
+    }else if(is_online(username, av_chats)){
+        return 0;
+    }
+
+    return 1;
 }
 
 

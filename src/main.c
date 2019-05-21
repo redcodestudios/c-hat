@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "inc/menu.h"
 #include "inc/app_utils.h"
@@ -20,13 +21,23 @@ void exit_handler(int signum);
 void send_handler(int signum);
 void broadcast_handler(int signum);
 
+char* username = "";
 struct Input INPUT = {"", ""};
+mqd_t inbox;
 
 int main(){
     signal(SIGINT, exit_handler);
+    char* raw_input;
     
     printf("Type your username: ");
-    const char* username = get_str(USERNAME_MAX_LEN);
+    username = get_str(USERNAME_MAX_LEN);
+    
+    if(!is_valid_username(username)){
+        fprintf(stderr, "Invalid username!\n");
+        return 0;
+    }
+
+    inbox = create_q(username);
 
     pthread_t sender_tid;
     pthread_t receiver_tid;
@@ -34,10 +45,7 @@ int main(){
     pthread_create(&sender_tid, NULL, &sender_thread, NULL);
     pthread_create(&receiver_tid, NULL, &receiver_thread, NULL);
     
-    char* raw_input;
-
     while(1){
-        printf("chat: ");
         raw_input = get_str(SENDING_HEADER_LEN + MSG_MAX_LEN);
         INPUT = treat_input(raw_input, username);
 
@@ -46,26 +54,7 @@ int main(){
         }else{
             pthread_kill(sender_tid, SIGUSR1);
         }
-        
-        // int option  = menu();
-        // switch (option){
-        //     case SEND_MESSAGE:
-        //         pthread_kill(sender_tid, SIGUSR1);
-        //         break;
-        //     case LIST_USERS:
-        //         break;
-        //     case BROADCAST:
-        //         pthread_kill(sender_tid, SIGUSR2);
-        //         break;
-        //     case EXIT:
-        //         return 0;
-        // }
     }
-    // create_q("pablo");
-    // str_array_t chats = find_available_chats();
-
-    // int a = send_message("rodrigo", "pablo", "ola", chats);
-    // printf("send msg result %d\n", a);
 
     return 0;
 }
@@ -84,6 +73,7 @@ void exit_handler(int signum){
 }
 
 void send_handler(int signum){
+    printf("\naaaaa %s\n", INPUT.msg);
     send_message(INPUT.sender, INPUT.receiver, INPUT.msg);
 }
 
@@ -98,5 +88,13 @@ void* sender_thread(void *p){
 }
 
 void* receiver_thread(void *p){
-    printf("\npablo says: iae\n");
+    char* msg = (char*) malloc(MSG_MAX_SIZE);
+    inbox = read_q(username);
+    while(1){
+        if ((mq_receive(inbox, (char*) msg, MSG_MAX_SIZE, 0)) < 1) {
+            perror("mq_receive:");
+        }else{
+            printf("%s\n", msg);
+        }
+    }
 }

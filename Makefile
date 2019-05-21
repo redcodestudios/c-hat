@@ -4,6 +4,7 @@ dep = $(obj:.o=.d)  # one dependency file for each source
 
 LDFLAGS = -lGL -lpng -lz -lm -lrt
 THREAD_FLAGS = -pthread
+WARNING_FLAGS = -Wall -Wextra
 
 c-hat: $(obj)
 		$(CC) -o $@ $^ $(LDFLAGS) $(THREAD_FLAGS)

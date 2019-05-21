@@ -10,6 +10,8 @@
 #include <dirent.h>
 #include <sys/types.h>
 
+#define MSG_MAX_SIZE 522
+
 mqd_t create_q(char* user_name);
 mqd_t read_q(char* user_name);
 mqd_t write_q(char* user_name);

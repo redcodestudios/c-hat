@@ -15,12 +15,6 @@
 #define HEADER_LEN 5 // chat-
 
 
-struct Input {
-    const char* sender;
-    char* receiver;
-    char* msg;
-};
-
 /* Safely get a string from the user. */
 char* get_str(unsigned int buffer_size);
 
@@ -57,6 +51,7 @@ int is_chat(char* str);
 
 int is_online(char* user, str_array_t av_users);
 
+int is_valid_username(const char* username);
 
 /* Find all chats that are available to sen messages. */
 str_array_t find_available_chats();
