@@ -30,37 +30,39 @@ char* get_strl(unsigned int buffer_size){
 struct Input treat_input(char* raw, const char* sender){
     char* receiver;
     char* msg;
+    char* tmp = malloc(strlen(raw));
+    tmp = strcpy(tmp, raw);
 
-    receiver = strtok(raw, ":");
+    receiver = strtok(tmp, ":");
     receiver = strtok(NULL, ":");
     msg = strtok(NULL, ": ");
 
-    struct Input i = {sender, receiver, msg};
+    struct Input i = {sender, receiver, msg, raw};
     return i;
 }
 
-int send_message(const char* sender, char* receiver, char* msg){
-    char* new_msg = malloc(MSG_MAX_SIZE);
-    strcat(new_msg, sender);
-    strcat(new_msg, ": ");
-    strcat(new_msg, msg);
-    
+int send_message(const char* sender, char* receiver, char* msg){    
     str_array_t av_chats = find_available_chats();
     if(is_online(receiver, av_chats)){
         mqd_t q = write_q(receiver);
 
-        if (mq_send(q, new_msg, strlen(new_msg), 0) < 0) {
+        if (mq_send(q, msg, strlen(msg), 0) < 0) {
             perror("\nError sending message\n");
             return -1;
         }
         return 0;
     }
-    perror("\nUser is offline\n");
+    printf("\nUNKNOWNUSER %s\n", receiver);
     return -1;
 }
 
 
 int broadcast_message(const char* sender, char* msg){
+    // str_array_t av_chats = find_available_chats();
+    // char* msg = 
+    // for(int i=0; i<av_chats.length; i++){
+    //     send_message(av_chats[i])
+    // }
     return 0;
 }
 
@@ -136,4 +138,23 @@ str_array_t find_available_chats() {
     }
     closedir(dir);
     return chats;
+}
+
+
+void print_msg(char* msg){
+    char* sender;    
+    char* receiver;
+    char* new_msg;
+    char* msg_buff = malloc(MSG_MAX_SIZE);
+
+    sender = strtok(msg, ":");
+    receiver = strtok(NULL, ":");
+    
+    new_msg = strtok(NULL, ":");
+    
+    while (new_msg != NULL){
+        strcat(msg_buff, new_msg);        
+        new_msg = strtok(NULL, ":");
+    }
+    printf("%s: %s\n", sender, msg_buff);
 }

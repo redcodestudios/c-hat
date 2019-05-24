@@ -12,6 +12,7 @@ struct Input {
     const char* sender;
     char* receiver;
     char* msg;
+    char* raw;
 };
 
 void add_str(int index, char* str, str_array_t* a);

@@ -56,4 +56,6 @@ int is_valid_username(const char* username);
 /* Find all chats that are available to sen messages. */
 str_array_t find_available_chats();
 
+void print_msg(char* msg);
+
 #endif

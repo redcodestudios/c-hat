@@ -47,7 +47,8 @@ int main(){
     
     while(1){
         raw_input = get_str(SENDING_HEADER_LEN + MSG_MAX_LEN);
-        if(strcmp(raw_input, ":list") == 0){
+        
+        if(strcmp(raw_input, "list") == 0){
             str_array_t online_users = find_available_chats();
             printf("\n---------- Online users ----------\n");
             for(int i=0; i<online_users.length; i++){
@@ -81,7 +82,7 @@ void exit_handler(int signum){
 }
 
 void send_handler(int signum){
-    send_message(INPUT.sender, INPUT.receiver, INPUT.msg);
+    send_message(INPUT.sender, INPUT.receiver, INPUT.raw);
 }
 
 void broadcast_handler(int signum){
@@ -101,7 +102,7 @@ void* receiver_thread(void *p){
         if ((mq_receive(inbox, (char*) msg, MSG_MAX_SIZE, 0)) < 1) {
             perror("mq_receive:");
         }else{
-            printf("%s\n", msg);
+            print_msg(msg);
         }
     }
 }
