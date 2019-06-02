@@ -77,10 +77,8 @@ void destroy_q(char* user_name) {
 
 // Based on the username, returns the queue name with the preset prefix.
 char* get_queue_name(char* user_name) {
-    const char* prefix = "/chat-";
-
-    char* queue_name;
-    queue_name = malloc(sizeof(prefix) + sizeof(user_name));
+    const char prefix[] = "/chat-";
+    char* queue_name = (char*) malloc(sizeof(prefix) + sizeof(user_name));
 
     strcpy(queue_name, prefix);
     strcat(queue_name, user_name);

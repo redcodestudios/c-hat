@@ -46,7 +46,7 @@ char* get_username(char* str);
     Verify if a string is in the chat id format.
     E.g. chat-user
 */
-int is_chat(char* str);
+// int is_chat(char* str);
 
 
 int is_online(char* user, str_array_t av_users);

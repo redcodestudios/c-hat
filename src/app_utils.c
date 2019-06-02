@@ -41,70 +41,80 @@ struct Input treat_input(char* raw, const char* sender){
     return i;
 }
 
-int send_message(const char* sender, char* receiver, char* msg){    
-    str_array_t av_chats = find_available_chats();
-    if(is_online(receiver, av_chats)){
-        mqd_t q = write_q(receiver);
+// int send_message(const char* sender, char* receiver, char* msg){
+//     fprintf(stderr, "xush\n");
+//     str_array_t av_chats = find_available_chats();
+//     fprintf(stderr, "xish\n");
+//     if(is_online(receiver, av_chats)){
+//         fprintf(stderr, "xish %s\n", receiver);
+//         mqd_t q = write_q(receiver);
 
-        if (mq_send(q, msg, strlen(msg), 0) < 0) {
-            perror("\nError sending message\n");
-            return -1;
-        }
-        return 0;
-    }
-    printf("\nUNKNOWNUSER %s\n", receiver);
-    return -1;
-}
+//         if (mq_send(q, msg, strlen(msg), 0) < 0) {
+//             perror("\nError sending message\n");
+//             return -1;
+//         }
+//         return 0;
+//     }
+//     printf("\nUNKNOWNUSER %s\n", receiver);
+//     return -1;
+// }
 
 
 int broadcast_message(const char* sender, char* msg){
-    // str_array_t av_chats = find_available_chats();
+    str_array_t av_chats = find_available_chats();
+    for(int i=0; i<av_chats.length; i++){
+        fprintf(stderr, "lalala %s\n", av_chats.elements[i]);
+    }
     // char* msg = 
-    // for(int i=0; i<av_chats.length; i++){
-    //     send_message(av_chats[i])
-    // }
+    for(int i=0; i<av_chats.length; i++){
+        fprintf(stderr, "av %s\n", av_chats.elements[i]);
+        send_message(sender, get_username(av_chats.elements[i]), msg);
+    }
     return 0;
 }
 
 
 char* get_username(char* str) {
     int length = strlen(str) - HEADER_LEN;
+    fprintf(stderr, "HOW\n");
     char* tmp = malloc(length);
-    
+    fprintf(stderr, "HEY\n");    
     
     for(int i=5,j=0; i<strlen(str); i++, j++){
         tmp[j] = str[i];
     }
-    tmp[length] = '\0';
+    tmp[length-1] = '\0';
+    fprintf(stderr, "username %s\n", tmp);
     return tmp;
 }
 
 
-int is_chat(char* str){
-    if(strlen(str) > 15 || strlen(str) < 5){
-        return 0;
-    }
+// int is_chat(char* str){
+//     if(strlen(str) > 15 || strlen(str) < 5){
+//         return 0;
+//     }
 
-    char tmp[5];
+//     char tmp[5];
 
-    for(int i=0; i<5; i++) {
-        tmp[i] = str[i];
-    }
+//     for(int i=0; i<5; i++) {
+//         tmp[i] = str[i];
+//     }
 
-    return strcmp(tmp, "chat-\0") == 0;
-}
+//     return strcmp(tmp, "chat-\0") == 0;
+// }
 
 
-int is_online(char* user, str_array_t av_chats){
-    for(int i=0; i<av_chats.length; i++){
-        char* tmp =  get_username(av_chats.elements[i]);
-
-        if(strcmp(user, tmp) == 0){
-            return 1;
-        }
-    }
-    return 0;
-}
+// int is_online(char* user, str_array_t av_chats){
+//     for(int i=0; i<av_chats.length; i++){
+//         fprintf(stderr, "yay\n");
+//         char* tmp =  get_username(av_chats.elements[i]);
+//         fprintf(stderr, "yay2\n");
+//         if(strcmp(user, tmp) == 0){
+//             return 1;
+//         }
+//     }
+//     return 0;
+// }
 
 int is_valid_username(const char* username){
     str_array_t av_chats = find_available_chats();
