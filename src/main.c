@@ -78,16 +78,21 @@ void exit_handler(int signum){
 
 void sender_handler(int signum){
     char* receiver = get_receiver(BUFFER);
-    if(send_message(receiver, BUFFER) < 0){
+    char* tmp = calloc(MAX_MESSAGE_SIZE,sizeof(char));
+    tmp = strcpy(tmp, BUFFER);
+    BUFFER[0]='\0';
+    if(send_message(receiver, tmp) < 0){
         pthread_kill(resender_tid, SIGUSR1);
     }
 }
 
 void broadcast_handler(int signum){
     chat_array_t av_chats = get_chats();
-
+    char* tmp = calloc(MAX_MESSAGE_SIZE,sizeof(char));
+    tmp = strcpy(tmp, BUFFER);
+    BUFFER[0]='\0';
     for(int i=0; i<av_chats.length; i++){
-        send_message(av_chats.elements[i].username, BUFFER);
+        send_message(av_chats.elements[i].username, tmp);
     }    
 }
 
@@ -106,8 +111,9 @@ void* resender_thread(void* arg){
 }
 
 void* receiver_thread(void* arg){
-    char* msg = (char*) malloc(MAX_MESSAGE_SIZE);
+    char* msg;
     while(1){
+        msg = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
         if ((mq_receive(INBOX.queue, (char*) msg, MAX_MESSAGE_SIZE, 0)) < 1) {
             perror("mq_receive:");
         }else{

@@ -99,7 +99,7 @@ void* sender_thread(void *p){
 }
 
 void* receiver_thread(void *p){
-    char* msg = (char*) malloc(MSG_MAX_SIZE);
+    char* msg = (char*) calloc(MSG_MAX_SIZE, sizeof(char));
     inbox = read_q(username);
     while(1){
         if ((mq_receive(inbox, (char*) msg, MSG_MAX_SIZE, 0)) < 1) {

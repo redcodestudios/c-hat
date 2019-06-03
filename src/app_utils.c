@@ -2,7 +2,7 @@
 
 
 char* get_str(unsigned int buffer_size){
-    char* buffer = malloc(sizeof(char)*buffer_size);
+    char* buffer = calloc(buffer_size, sizeof(char));
     char tmp;
 
     for(int i=0; i < buffer_size; i++){

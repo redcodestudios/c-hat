@@ -12,7 +12,7 @@ int is_online(char* chatname){
 }
 
 int send_message(char* username, char* raw_msg){
-    char tmp[MAX_USERNAME_LEN];
+    char *tmp = (char*) calloc(MAX_USERNAME_LEN, sizeof(char));
     strcpy(tmp, username);
     if(is_online(get_queue_name(tmp)) == 1){
         mqd_t q = write_q(tmp);
@@ -80,10 +80,11 @@ char* get_receiver(char* raw){
 }
 
 void show_message(char* msg){
+
     char* sender;    
     char* receiver;
-    char* msg_content;
-    char* msg_buff = (char*) malloc(MAX_MESSAGE_SIZE);
+    char* msg_content = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
+    char* msg_buff = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
     
     sender = strtok(msg, ":");
     receiver = strtok(NULL, ":");
@@ -94,6 +95,9 @@ void show_message(char* msg){
         strcat(msg_buff, msg_content);        
         msg_content = strtok(NULL, ":");
     }
+    
+    msg_content = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
+    
     if(strcmp(receiver, "all") == 0){
         printf("Broadcast de %s: %s\n", sender, msg_buff);
     }else{
