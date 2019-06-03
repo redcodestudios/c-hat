@@ -2,23 +2,21 @@
 
 // Create the user queue with the desired permissions and name conventions.
 mqd_t create_q(char* user_name) {
-    // descritor da fila de mensagens
     mqd_t queue;
     // atributos da fila de mensagens
     struct mq_attr attr;
-    // define os atributos da fila de mensagens
-    // capacidade para 10 mensagens
     attr.mq_maxmsg = 10;
-    // as mensagens são números inteiros
-    attr.mq_msgsize = MSG_MAX_SIZE;  // tamanho de cada mensagem
+    attr.mq_msgsize = MSG_MAX_SIZE;
     attr.mq_flags = 0;
     
-    // 00700 | 00020 | 00002
+    mode_t prev_umask = umask(0000);
     char* queue_name = get_queue_name(user_name);
     if ((queue = mq_open(queue_name, O_CREAT, 00622, &attr)) < 0) {
         perror("mq_open");
         exit(1);
     }
+    
+    umask(prev_umask);
     return queue;
 }
 
@@ -60,17 +58,7 @@ void destroy_q(char* user_name) {
     char* queue_name = get_queue_name(user_name);
     
     if (mq_unlink(queue_name) != 0) {
-        switch (errno) {
-            case EACCES:
-                fprintf(stderr, "No permission to unlink this message queue\n");
-                break;
-            case ENAMETOOLONG:
-                fprintf(stderr, "Queue name too long\n");
-                break;
-            case ENOENT:
-                fprintf(stderr, "No message queue with given name\n");
-                break;
-        }
+        perror("mq_unlink");
         exit(1);
     }
 }
