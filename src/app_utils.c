@@ -41,31 +41,13 @@ struct Input treat_input(char* raw, const char* sender){
     return i;
 }
 
-// int send_message(const char* sender, char* receiver, char* msg){
-//     fprintf(stderr, "xush\n");
-//     str_array_t av_chats = find_available_chats();
-//     fprintf(stderr, "xish\n");
-//     if(is_online(receiver, av_chats)){
-//         fprintf(stderr, "xish %s\n", receiver);
-//         mqd_t q = write_q(receiver);
-
-//         if (mq_send(q, msg, strlen(msg), 0) < 0) {
-//             perror("\nError sending message\n");
-//             return -1;
-//         }
-//         return 0;
-//     }
-//     printf("\nUNKNOWNUSER %s\n", receiver);
-//     return -1;
-// }
-
 
 int broadcast_message(const char* sender, char* msg){
     str_array_t av_chats = find_available_chats();
     for(int i=0; i<av_chats.length; i++){
         fprintf(stderr, "lalala %s\n", av_chats.elements[i]);
     }
-    // char* msg = 
+   
     for(int i=0; i<av_chats.length; i++){
         fprintf(stderr, "av %s\n", av_chats.elements[i]);
         send_message(sender, get_username(av_chats.elements[i]), msg);
@@ -88,33 +70,6 @@ char* get_username(char* str) {
     return tmp;
 }
 
-
-// int is_chat(char* str){
-//     if(strlen(str) > 15 || strlen(str) < 5){
-//         return 0;
-//     }
-
-//     char tmp[5];
-
-//     for(int i=0; i<5; i++) {
-//         tmp[i] = str[i];
-//     }
-
-//     return strcmp(tmp, "chat-\0") == 0;
-// }
-
-
-// int is_online(char* user, str_array_t av_chats){
-//     for(int i=0; i<av_chats.length; i++){
-//         fprintf(stderr, "yay\n");
-//         char* tmp =  get_username(av_chats.elements[i]);
-//         fprintf(stderr, "yay2\n");
-//         if(strcmp(user, tmp) == 0){
-//             return 1;
-//         }
-//     }
-//     return 0;
-// }
 
 int is_valid_username(const char* username){
     str_array_t av_chats = find_available_chats();
