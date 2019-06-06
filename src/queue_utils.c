@@ -11,11 +11,11 @@ mqd_t create_q(char* user_name) {
     
     mode_t prev_umask = umask(0000);
     char* queue_name = get_queue_name(user_name);
-    if ((queue = mq_open(queue_name, O_CREAT, 00622, &attr)) < 0) {
+    
+    if ((queue = mq_open(queue_name, O_RDWR|O_CREAT, 00622, &attr)) < 0) {
         perror("mq_open");
         exit(1);
     }
-    
     umask(prev_umask);
     return queue;
 }
@@ -66,7 +66,7 @@ void destroy_q(char* user_name) {
 // Based on the username, returns the queue name with the preset prefix.
 char* get_queue_name(char* user_name) {
     const char prefix[] = "/chat-";
-    char* queue_name = (char*) malloc(sizeof(prefix) + sizeof(user_name));
+    char* queue_name = (char*) calloc(6 + 64, sizeof(char));
 
     strcpy(queue_name, prefix);
     strcat(queue_name, user_name);

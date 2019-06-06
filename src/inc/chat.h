@@ -21,7 +21,7 @@ typedef struct chat_array_t{
     int length;
 }chat_array_t;
 
-
+Chat new_chat_inbox(char username[10], mqd_t inbox);
 Chat new_chat(char username[10]);
 
 int add_chat(chat_array_t* chat_array, Chat chat);

@@ -6,10 +6,23 @@ Chat new_chat(char username[10]){
 
     strcpy(new_chat.username, username);
     strcpy(new_chat.chatname, chatname);
-   
-    create_q(username);
-    new_chat.queue = read_q(new_chat.username);
     
+    return new_chat;
+}
+
+Chat new_chat_inbox(char username[10], mqd_t inbox){
+    char* chatname = get_queue_name(username);
+    Chat new_chat;
+
+    strcpy(new_chat.username, username);
+    strcpy(new_chat.chatname, chatname);
+    new_chat.queue = inbox;
+
+    if(inbox == NULL){
+        create_q(username);
+        new_chat.queue = read_q(new_chat.username);
+    }
+
     return new_chat;
 }
 

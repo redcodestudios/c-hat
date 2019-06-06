@@ -28,8 +28,7 @@ int main(){
     printf("Type your username: ");
     scanf("%s", username);
     validate_username(username);
-
-    INBOX = new_chat(username);
+    INBOX = new_chat_inbox(username, NULL);
 
     pthread_t sender_tid;
     pthread_t receiver_tid;
