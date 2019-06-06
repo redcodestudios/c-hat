@@ -2,7 +2,7 @@ src = $(wildcard src/*.c)
 obj = $(src:.c=.o)
 dep = $(obj:.o=.d)  # one dependency file for each source
 
-LDFLAGS = -lGL -lpng -lz -lm -lrt
+LDFLAGS = -lGL -lm -lrt
 THREAD_FLAGS = -pthread
 WARNING_FLAGS = -Wall -Wextra
 
