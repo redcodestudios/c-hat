@@ -16,7 +16,7 @@ void exit_handler(int signum);
 
 Chat INBOX;
 char BUFFER[MAX_MESSAGE_SIZE];
-
+resend_queue_t* RESEND_QUEUE;
 pthread_t resender_tid;
 
 pthread_cond_t cv_send;
@@ -80,8 +80,26 @@ void sender_handler(int signum){
     char* tmp = calloc(MAX_MESSAGE_SIZE,sizeof(char));
     tmp = strcpy(tmp, BUFFER);
     BUFFER[0]='\0';
+
+    // pass the msg to a resend thread when send fails
     if(send_message(receiver, tmp) < 0){
+        queued_msg_t queued_msg = {receiver, tmp};
+        add_to_queue(RESEND_QUEUE, queued_msg);
         pthread_kill(resender_tid, SIGUSR1);
+    }
+}
+
+void resender_handler(int signum){
+    fprintf(stderr, "Resend\n");
+    if(RESEND_QUEUE->size > 0){
+        for(int i=0; i<3; i++){
+            sleep(5);
+            int index = RESEND_QUEUE->size - 1;
+            char* receiver = RESEND_QUEUE->elements[index].receiver;
+            char* msg = RESEND_QUEUE->elements[index].raw_msg;
+            send_message(receiver, msg);
+        }
+        RESEND_QUEUE->size -= 1;
     }
 }
 
@@ -106,7 +124,8 @@ void* sender_thread(void* arg){
 }
 
 void* resender_thread(void* arg){
-
+    RESEND_QUEUE = new_resend_queue();
+    signal(SIGUSR1, resender_handler);
 }
 
 void* receiver_thread(void* arg){

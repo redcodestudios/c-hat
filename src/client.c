@@ -104,3 +104,15 @@ void show_message(char* msg){
         printf("%s: %s\n", sender, msg_buff);
     }
 }
+
+resend_queue_t* new_resend_queue(){
+    resend_queue_t* new_q = (resend_queue_t*) malloc(sizeof(resend_queue_t));
+    new_q->size = 0;
+
+    return new_q;
+}
+
+void add_to_queue(resend_queue_t* q, queued_msg_t msg){
+    q->elements[q->size] = msg;
+    q->size++;
+}
