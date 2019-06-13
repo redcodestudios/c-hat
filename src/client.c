@@ -79,9 +79,9 @@ char* get_receiver(char* raw){
     return receiver;
 }
 
-void show_message(char* msg){
+void show_message(char* msg, char* BUFFER){
 
-    char* sender;    
+    char* sender;
     char* receiver;
     char* msg_content = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
     char* msg_buff = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
@@ -92,17 +92,17 @@ void show_message(char* msg){
     msg_content = strtok(NULL, ":");
 
     while (msg_content != NULL){
-        strcat(msg_buff, msg_content);        
+        strcat(msg_buff, msg_content);
         msg_content = strtok(NULL, ":");
     }
     
     msg_content = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
-    
     if(strcmp(receiver, "all") == 0){
-        printf("Broadcast de %s: %s\n", sender, msg_buff);
+        printf("\nBroadcast de %s: %s\n", sender, msg_buff);
     }else{
-        printf("%s: %s\n", sender, msg_buff);
+        printf("\n%s: %s\n", sender, msg_buff);
     }
+    printf("%s", BUFFER);
 }
 
 resend_queue_t* new_resend_queue(){

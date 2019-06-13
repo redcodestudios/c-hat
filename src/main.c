@@ -84,8 +84,8 @@ void sender_handler(int signum){
     // pass the msg to a resend thread when send fails
     if(send_message(receiver, tmp) < 0){
         queued_msg_t queued_msg = {receiver, tmp};
-        add_to_queue(RESEND_QUEUE, queued_msg);
-        pthread_kill(resender_tid, SIGUSR1);
+        // add_to_queue(RESEND_QUEUE, queued_msg);
+        // pthread_kill(resender_tid, SIGUSR1);
     }
 }
 
@@ -125,7 +125,7 @@ void* sender_thread(void* arg){
 
 void* resender_thread(void* arg){
     RESEND_QUEUE = new_resend_queue();
-    signal(SIGUSR1, resender_handler);
+    // signal(SIGUSR1, resender_handler);
 }
 
 void* receiver_thread(void* arg){
@@ -133,9 +133,9 @@ void* receiver_thread(void* arg){
     while(1){
         msg = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
         if ((mq_receive(INBOX.queue, (char*) msg, MAX_MESSAGE_SIZE, 0)) < 1) {
-            perror("mq_receive:");
+            perror("mq_receive: ");
         }else{
-            show_message(msg);
+            show_message(msg, BUFFER);
         }
     }
 }

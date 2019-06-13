@@ -26,7 +26,7 @@ void add_to_queue(resend_queue_t* q, queued_msg_t msg);
 int send_message(char* receiver, char* raw_msg);
 int broadcast_message(char* raw_msg);
 
-void show_message(char* msg);
+void show_message(char* msg, char* BUFFER);
 
 int is_online(char* chatname);
 void validate_username(char* username);
