@@ -1,4 +1,4 @@
-#include "inc/chat.h"
+#include "include/chat.h"
 
 Chat new_chat(char username[10]){
     char* chatname = get_queue_name(username);

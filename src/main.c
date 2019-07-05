@@ -4,9 +4,9 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "inc/queue_utils.h"
-#include "inc/chat.h"
-#include "inc/client.h"
+#include "include/queue_utils.h"
+#include "include/chat.h"
+#include "include/client.h"
 
 void* sender_thread(void* arg);
 void* resender_thread(void* arg);
@@ -83,16 +83,19 @@ void sender_handler(int signum){
 
     // pass the msg to a resend thread when send fails
     if(send_message(receiver, tmp) < 0){
+        fprintf(stderr, "aaaaaa");
         queued_msg_t queued_msg = {receiver, tmp};
-        add_to_queue(RESEND_QUEUE, queued_msg);
-        pthread_kill(resender_tid, SIGUSR1);
+        // add_to_queue(RESEND_QUEUE, queued_msg);
+        // pthread_kill(resender_tid, SIGUSR1);
+        fprintf(stderr, "bbbbbb");
     }
 }
 
 void resender_handler(int signum){
-    fprintf(stderr, "Resend\n");
+    fprintf(stderr, "AAAAAAAA %d\n", RESEND_QUEUE->size);
     if(RESEND_QUEUE->size > 0){
         for(int i=0; i<3; i++){
+            fprintf(stderr, "Resend\n");
             sleep(5);
             int index = RESEND_QUEUE->size - 1;
             char* receiver = RESEND_QUEUE->elements[index].receiver;

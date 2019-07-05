@@ -8,7 +8,7 @@ project "c-hat"
     language "C"
     targetdir "bin"
 
-    files { "../src/inc/**.h,", "../src/**.c" }
+    files { "../src/include/**.h,", "../src/**.c" }
 
     configuration "debug"
         defines { "DEBUG" }

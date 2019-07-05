@@ -1,4 +1,4 @@
-#include "inc/client.h"
+#include "include/client.h"
 
 int is_online(char* chatname){
     chat_array_t av_chats = get_chats();
@@ -113,6 +113,7 @@ resend_queue_t* new_resend_queue(){
 }
 
 void add_to_queue(resend_queue_t* q, queued_msg_t msg){
+    printf("aaaaaa %d\n", q->size);
     q->elements[q->size] = msg;
     q->size++;
 }

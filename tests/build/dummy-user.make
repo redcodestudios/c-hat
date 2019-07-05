@@ -24,7 +24,7 @@ ifeq ($(config),linux)
   TARGETDIR  = bin
   TARGET     = $(TARGETDIR)/dummy-user
   DEFINES   += 
-  INCLUDES  += -I../src/inc
+  INCLUDES  += -I../src/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -pthread -lGL -lm -lrt -Wall -Wextra
   CXXFLAGS  += $(CFLAGS) 
@@ -42,10 +42,6 @@ ifeq ($(config),linux)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/main.o \
-	$(OBJDIR)/client.o \
-	$(OBJDIR)/chat.o \
-	$(OBJDIR)/queue_utils.o \
 
 RESOURCES := \
 
@@ -106,17 +102,5 @@ $(GCH): $(PCH)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 endif
 
-$(OBJDIR)/main.o: main.c
-	@echo $(notdir $<)
-	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/client.o: ../src/client.c
-	@echo $(notdir $<)
-	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/chat.o: ../src/chat.c
-	@echo $(notdir $<)
-	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/queue_utils.o: ../src/queue_utils.c
-	@echo $(notdir $<)
-	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)
