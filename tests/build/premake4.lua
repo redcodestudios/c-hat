@@ -8,9 +8,9 @@ project "dummy-user"
     language "C"
     targetdir "bin"
 
-    files { "../src/inc/**.h", "**.c", "../src/**.c" }
-    excludes { "../src/main.c" }
-    includedirs { "../src/inc/"}
+    files { "../../src/inc/**.h", "../**.c", "../../src/**.c" }
+    excludes { "../../src/main.c", "../../src/inc/client.h", "../../src/client.c" }
+    includedirs { "../../src/inc/"}
     
     configuration "linux"
         buildoptions {"-pthread", "-lGL", "-lm", "-lrt", "-Wall", "-Wextra"}

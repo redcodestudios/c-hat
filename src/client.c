@@ -11,13 +11,30 @@ int is_online(char* chatname){
     return 0;
 }
 
-int send_message(char* username, char* raw_msg){
-    char *tmp = (char*) calloc(MAX_USERNAME_LEN, sizeof(char));
-    strcpy(tmp, username);
-    if(is_online(get_queue_name(tmp)) == 1){
-        mqd_t q = write_q(tmp);
-        if (mq_send(q, raw_msg, strlen(raw_msg), 0) < 0) {
-            printf("\nERRO %s", raw_msg);
+int send_message(Message* message){
+    char concat_msg[MAX_MESSAGE_SIZE];
+    strcpy(concat_msg, message->raw);
+    strcat(concat_msg, ":|");
+    strcat(concat_msg, message->id);
+    strcat(concat_msg, "|");
+
+    if(is_online(get_queue_name(message->receiver)) == 1){
+        mqd_t q = write_q(message->receiver);
+        if (mq_send(q, concat_msg, MAX_MESSAGE_SIZE, 0) < 0) {
+            printf("\nERRO %s", message->raw);
+            return -1;
+        }
+        return 0;
+    }
+    printf("\n Unknow user \"%s\"\n", message->receiver);
+    return -1;
+}
+
+int send_direct_message(char* username, char* message){
+    if(is_online(get_queue_name(username)) == 1){
+        mqd_t q = write_q(username);
+        if (mq_send(q, message, MAX_MESSAGE_SIZE, 0) < 0) {
+            printf("\nERRO %s", message);
             return -1;
         }
         return 0;
@@ -79,30 +96,12 @@ char* get_receiver(char* raw){
     return receiver;
 }
 
-void show_message(char* msg, char* BUFFER){
-
-    char* sender;
-    char* receiver;
-    char* msg_content = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
-    char* msg_buff = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
-    
-    sender = strtok(msg, ":");
-    receiver = strtok(NULL, ":");
-    
-    msg_content = strtok(NULL, ":");
-
-    while (msg_content != NULL){
-        strcat(msg_buff, msg_content);
-        msg_content = strtok(NULL, ":");
-    }
-    
-    msg_content = (char*) calloc(MAX_MESSAGE_SIZE, sizeof(char));
-    if(strcmp(receiver, "all") == 0){
-        printf("\nBroadcast de %s: %s\n", sender, msg_buff);
+void show_message(Message* message){
+    if(strcmp(message->receiver, "all") == 0){
+        printf("\nBroadcast de %s: %s\n", message->sender, message->content);
     }else{
-        printf("\n%s: %s\n", sender, msg_buff);
+        printf("\n%s: %s\n", message->sender, message->content);
     }
-    printf("%s", BUFFER);
 }
 
 resend_queue_t* new_resend_queue(){
@@ -115,17 +114,6 @@ resend_queue_t* new_resend_queue(){
 void add_to_queue(resend_queue_t* q, queued_msg_t msg){
     q->elements[q->size] = msg;
     q->size++;
-}
-
-int gen_message_id(char username[10]){
-    int hash = 0;
-    int salt = rand() % 100 + 1;
-
-    for(int i=0; i<10; i++){
-        hash += username[i] - '0';
-    }
-
-    return (hash + salt);
 }
 
 int is_auth_request(char* msg){
@@ -179,4 +167,11 @@ int is_authentic(char* str){
 		return 1;
 	else
 		return 0;
+}
+
+void request_auth(Message* message){
+    fprintf(stderr, "aaadasd %s\n", message->id);
+    Message* auth_message = invert_sender(message);
+    auth_message->raw = new_auth_message(auth_message);
+    send_message(auth_message);
 }

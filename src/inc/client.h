@@ -2,10 +2,11 @@
 
 // #include <string.h>
 #include <regex.h>
+#include <time.h>
 
 #include "chat.h"
 #include "queue_utils.h"
-#include <time.h>
+#include "message.h"
 
 #define MAX_MESSAGE_SIZE 522
 
@@ -24,10 +25,12 @@ resend_queue_t* new_resend_queue();
 
 void add_to_queue(resend_queue_t* q, queued_msg_t msg);
 
-int send_message(char* receiver, char* raw_msg);
+int send_message(Message* message);
+int send_direct_message(char* username, char* message);
 int broadcast_message(char* raw_msg);
 
-void show_message(char* msg, char* BUFFER);
+// void show_message(char* msg, char* BUFFER);
+void show_message(Message* message);
 
 int is_online(char* chatname);
 void validate_username(char* username);
@@ -35,7 +38,8 @@ int is_message(char* msg);
 int is_broadcast(char* msg);
 char* get_receiver(char* raw);
 
-int gen_message_id(char username[10]);
 int is_auth_request(char* msg);
 char* reply(char* msg);
 int is_authentic(char* str);
+
+void request_auth(Message* message);

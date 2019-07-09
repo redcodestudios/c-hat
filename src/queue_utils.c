@@ -67,7 +67,6 @@ void destroy_q(char* user_name) {
 char* get_queue_name(char* user_name) {
     const char prefix[] = "/chat-";
     char* queue_name = (char*) calloc(6 + 64, sizeof(char));
-
     strcpy(queue_name, prefix);
     strcat(queue_name, user_name);
 

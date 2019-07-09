@@ -24,7 +24,7 @@ ifeq ($(config),linux)
   TARGETDIR  = bin
   TARGET     = $(TARGETDIR)/dummy-user
   DEFINES   += 
-  INCLUDES  += -I../src/inc
+  INCLUDES  += -I../../src/inc
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -pthread -lGL -lm -lrt -Wall -Wextra
   CXXFLAGS  += $(CFLAGS) 
@@ -43,7 +43,7 @@ endif
 
 OBJECTS := \
 	$(OBJDIR)/main.o \
-	$(OBJDIR)/client.o \
+	$(OBJDIR)/message.o \
 	$(OBJDIR)/chat.o \
 	$(OBJDIR)/queue_utils.o \
 
@@ -106,16 +106,16 @@ $(GCH): $(PCH)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 endif
 
-$(OBJDIR)/main.o: main.c
+$(OBJDIR)/main.o: ../main.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/client.o: ../src/client.c
+$(OBJDIR)/message.o: ../../src/message.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/chat.o: ../src/chat.c
+$(OBJDIR)/chat.o: ../../src/chat.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/queue_utils.o: ../src/queue_utils.c
+$(OBJDIR)/queue_utils.o: ../../src/queue_utils.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 
