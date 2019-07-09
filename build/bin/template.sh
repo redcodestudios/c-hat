@@ -11,7 +11,7 @@ function __templateGENNAME()
   local USER=$1
   #Se o seu programa pede o username depois da execução comente a linha de
   #return
-  #return
+  return
 
   # Coloque aqui todas as linhas necessárias para definir o username
   # no exemplo abaixo o programa apenas pede para que se digite o nome do
@@ -22,7 +22,7 @@ function __templateGENNAME()
 function __templateEXIT()
 {
   # comando para sair do seu programa
-  echo exit
+  echo y
 }
 
 function __templateSENDMSG()
