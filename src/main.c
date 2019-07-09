@@ -14,6 +14,9 @@ void* receiver_thread(void* arg);
 
 void exit_handler(int signum);
 
+int MSG_HISTORY[5000];
+int LAST_MSG = 0;
+
 Chat INBOX;
 char BUFFER[MAX_MESSAGE_SIZE];
 resend_queue_t* RESEND_QUEUE;
@@ -23,6 +26,7 @@ pthread_cond_t cv_send;
 pthread_mutex_t lock_send;
 
 int main(){
+    MSG_HISTORY[LAST_MSG] = 666;
     signal(SIGINT, exit_handler);
     char username[MAX_USERNAME_LEN];
     printf("Type your username: ");
@@ -86,6 +90,10 @@ void sender_handler(int signum){
         queued_msg_t queued_msg = {receiver, tmp};
         // add_to_queue(RESEND_QUEUE, queued_msg);
         // pthread_kill(resender_tid, SIGUSR1);
+    }else{
+        MSG_HISTORY[LAST_MSG] = gen_message_id(INBOX.username);
+        printf("%d\n", MSG_HISTORY[LAST_MSG]);
+        LAST_MSG++;
     }
 }
 
@@ -135,7 +143,54 @@ void* receiver_thread(void* arg){
         if ((mq_receive(INBOX.queue, (char*) msg, MAX_MESSAGE_SIZE, 0)) < 1) {
             perror("mq_receive: ");
         }else{
-            show_message(msg, BUFFER);
+            if(is_auth_request(msg) == 1){
+                if(strstr(msg, "|Y") == NULL && strstr(msg, "|N") == NULL){
+                    char* msg_id;
+                    char* sender;
+                    char* receiver;
+                    char* tmp1 = malloc(strlen(msg));
+                    char* tmp2 = malloc(strlen(msg));
+
+                    tmp1 = strcpy(tmp1, msg);
+                    tmp2 = strcpy(tmp2, msg);
+
+                    sender = strtok(tmp1, ":");
+                    receiver = strtok(NULL, ":");
+
+                    msg_id = strtok(tmp2, "|");
+                    msg_id = strtok(NULL, "|");
+
+                    char* msg_yes =  calloc(strlen(msg) + 2, sizeof(char));
+                    char* msg_no = calloc(strlen(msg) + 2, sizeof(char));
+                    char* msg_reply = reply(msg);
+
+                    strcat(msg_yes, msg_reply);
+                    strcat(msg_yes, "Y|");
+
+                    strcat(msg_no, msg_reply);
+                    strcat(msg_no, "N|");
+                    
+                    int int_id;
+                    sscanf(msg_id, "%d", &int_id);
+
+                    for(int i=0; i<LAST_MSG; i++){
+                        if(MSG_HISTORY[i] == int_id){
+                            send_message(sender, msg_yes);
+                            break;
+                        }else{
+                            if(i == LAST_MSG-1 ){
+                                send_message(sender, msg_no);
+                            }
+                        }
+                    }
+                }else{
+                    if(is_authentic(msg) == 0){
+                        printf("WARNING: This message is not authentic!\n");
+                    }
+                }
+            }else{
+                show_message(msg, BUFFER);
+            }
         }
     }
 }

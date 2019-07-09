@@ -29,3 +29,5 @@ int is_chat(char* str);
 
 chat_array_t new_chat_array();
 chat_array_t get_chats();
+
+int gen_message_id(char username[10]);

@@ -5,6 +5,7 @@
 
 #include "chat.h"
 #include "queue_utils.h"
+#include <time.h>
 
 #define MAX_MESSAGE_SIZE 522
 
@@ -33,3 +34,8 @@ void validate_username(char* username);
 int is_message(char* msg);
 int is_broadcast(char* msg);
 char* get_receiver(char* raw);
+
+int gen_message_id(char username[10]);
+int is_auth_request(char* msg);
+char* reply(char* msg);
+int is_authentic(char* str);
