@@ -15,6 +15,7 @@ int send_message(User* user, Message* message);
 void request_auth(Message* message);
 
 void show_message(Message* message);
+void show_channel_message(Message* message);
 
 int is_online(char* chatname);
 void validate_username(char* username);
@@ -35,3 +36,6 @@ void success_auth(char* auth_message);
 char* remove_bars(char* str);
 
 char* raw_invert_sender(char* message);
+
+int is_channel_create(char* message);
+int is_channel_msg(Message* message);

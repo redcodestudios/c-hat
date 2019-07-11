@@ -93,6 +93,7 @@ OBJECTS := \
 	$(OBJDIR)/old_main.o \
 	$(OBJDIR)/chat.o \
 	$(OBJDIR)/queue_utils.o \
+	$(OBJDIR)/channel.o \
 
 RESOURCES := \
 
@@ -172,6 +173,9 @@ $(OBJDIR)/chat.o: ../src/chat.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/queue_utils.o: ../src/queue_utils.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/channel.o: ../src/channel.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 

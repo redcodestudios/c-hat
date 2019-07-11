@@ -130,6 +130,10 @@ void show_message(Message* message){
     }
 }
 
+void show_channel_message(Message* message){
+    printf("\n%s:%s:%s\n", message->from, message->to, message->content);
+}
+
 int is_auth_request(char* msg){
     regex_t regex;
     if (regcomp(&regex , "^.*:.*:\\|.*\\|$", REG_EXTENDED|REG_NOSUB) != 0) {
@@ -207,4 +211,25 @@ char* raw_invert_sender(char* message){
     strcat(result, receiver);
     strcat(result, ":");
     strcat(result, content);
+}
+
+int is_channel_create(char* message){
+    regex_t regex;
+
+    if(regcomp(&regex , "^/canal-([a-zA-Z0-9]+).*$", REG_EXTENDED|REG_NOSUB) != 0) {
+		fprintf(stderr,"erro regcomp\n");
+		exit(1);
+	}
+
+    if((regexec(&regex, message, 0, (regmatch_t *)NULL, 0)) == 0)
+		return 1;
+	else
+		return 0;
+}
+
+int is_channel_msg(Message* message){
+    if(strstr(message->to, "#") != NULL){
+        return 1;
+    }
+    return 0;
 }

@@ -42,8 +42,20 @@ int main(){
 
     
 
-   printf("msg_id: %s\n", get_message_id("dummy:lully:|122|"));
-   printf("%d\n", strcmp("122", get_message_id("dummy:lully:|122|")));
-   int a  = is_false("dummy:lully:|122|N|");
-   printf("l ulasdasda %d\n", a);
+   // printf("msg_id: %s\n", get_message_id("dummy:lully:|122|"));
+   // printf("%d\n", strcmp("122", get_message_id("dummy:lully:|122|")));
+   // int a  = is_false("dummy:lully:|122|N|");
+   // printf("l ulasdasda %d\n", a);
+
+   regex_t regex;
+
+    if (regcomp(&regex , "^/canal-([a-zA-Z0-9]+).*$", REG_EXTENDED|REG_NOSUB) != 0) {
+		fprintf(stderr,"erro regcomp\n");
+		exit(1);
+	}
+
+    if ((regexec(&regex, "/canal-a", 0, (regmatch_t *)NULL, 0)) == 0)
+		printf("1");
+	else
+		printf("0");
 }

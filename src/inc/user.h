@@ -1,3 +1,5 @@
+#pragma once
+
 #include "message.h"
 
 #define MAX_MSG_HISTORY 5000
