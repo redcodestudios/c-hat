@@ -43,7 +43,10 @@ endif
 
 OBJECTS := \
 	$(OBJDIR)/main.o \
+	$(OBJDIR)/client.o \
 	$(OBJDIR)/message.o \
+	$(OBJDIR)/user.o \
+	$(OBJDIR)/old_main.o \
 	$(OBJDIR)/chat.o \
 	$(OBJDIR)/queue_utils.o \
 
@@ -109,7 +112,16 @@ endif
 $(OBJDIR)/main.o: ../main.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/client.o: ../../src/client.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/message.o: ../../src/message.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/user.o: ../../src/user.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/old_main.o: ../../src/old_main.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/chat.o: ../../src/chat.c

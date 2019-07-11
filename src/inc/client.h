@@ -4,42 +4,34 @@
 #include <regex.h>
 #include <time.h>
 
+#include "user.h"
 #include "chat.h"
 #include "queue_utils.h"
 #include "message.h"
 
-#define MAX_MESSAGE_SIZE 522
+int raw_send(char* receiver, char* message);
+int send_broadcast(User* user, Message* message);
+int send_message(User* user, Message* message);
+void request_auth(Message* message);
 
-typedef struct queued_msg_t{
-    char receiver[MAX_USERNAME_LEN];
-    char raw_msg[MAX_MESSAGE_SIZE];
-    int send_attempts;
-}queued_msg_t;
-
-typedef struct resend_queue_t{
-    queued_msg_t elements[MAX_CHAT_ARRAY_ELEMENTS];
-    int size;
-}resend_queue_t;
-
-resend_queue_t* new_resend_queue();
-
-void add_to_queue(resend_queue_t* q, queued_msg_t msg);
-
-int send_message(Message* message);
-int send_direct_message(char* username, char* message);
-int broadcast_message(char* raw_msg);
-
-// void show_message(char* msg, char* BUFFER);
 void show_message(Message* message);
 
 int is_online(char* chatname);
 void validate_username(char* username);
 int is_message(char* msg);
 int is_broadcast(char* msg);
+
 char* get_receiver(char* raw);
+char* get_sender(char* raw);
+char* get_message_id(char* raw);
 
 int is_auth_request(char* msg);
-char* reply(char* msg);
+int is_auth_response(char* msg);
 int is_authentic(char* str);
 
-void request_auth(Message* message);
+void failed_auth(char* auth_message);
+void success_auth(char* auth_message);
+
+char* remove_bars(char* str);
+
+char* raw_invert_sender(char* message);

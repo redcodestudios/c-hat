@@ -9,7 +9,7 @@ project "dummy-user"
     targetdir "bin"
 
     files { "../../src/inc/**.h", "../**.c", "../../src/**.c" }
-    excludes { "../../src/main.c", "../../src/inc/client.h", "../../src/client.c" }
+    excludes { "../../src/main.c" }
     includedirs { "../../src/inc/"}
     
     configuration "linux"

@@ -1,6 +1,7 @@
 #include "inc/client.h"
 
-int is_online(char* chatname){
+int is_online(char* username){
+    char* chatname = get_queue_name(username);
     chat_array_t av_chats = get_chats();
 
     for(int i=0; i<av_chats.length; i++){
@@ -11,35 +12,29 @@ int is_online(char* chatname){
     return 0;
 }
 
-int send_message(Message* message){
-    char concat_msg[MAX_MESSAGE_SIZE];
-    strcpy(concat_msg, message->raw);
-    strcat(concat_msg, ":|");
-    strcat(concat_msg, message->id);
-    strcat(concat_msg, "|");
-
-    if(is_online(get_queue_name(message->receiver)) == 1){
-        mqd_t q = write_q(message->receiver);
-        if (mq_send(q, concat_msg, MAX_MESSAGE_SIZE, 0) < 0) {
-            printf("\nERRO %s", message->raw);
-            return -1;
-        }
-        return 0;
-    }
-    printf("\n Unknow user \"%s\"\n", message->receiver);
-    return -1;
+int send_message(User* user, Message* message){
+    user->last_message_id = message->id;
+    raw_send(message->to, message->repr);
 }
 
-int send_direct_message(char* username, char* message){
-    if(is_online(get_queue_name(username)) == 1){
-        mqd_t q = write_q(username);
+int send_broadcast(User* user, Message* message){
+    chat_array_t av_chats = get_chats();
+    user->last_message_id = message->id;
+    for(int i=0; i<av_chats.length; i++){
+        raw_send(av_chats.elements[i].username, message->repr);
+    }
+}
+
+int raw_send(char* receiver, char* message){
+    if(is_online(receiver) == 1){
+        mqd_t q = write_q(receiver);
         if (mq_send(q, message, MAX_MESSAGE_SIZE, 0) < 0) {
             printf("\nERRO %s", message);
             return -1;
         }
         return 0;
     }
-    printf("\n Unknow user \"%s\"\n", username);
+    printf("\nUnknow user \"%s\"\n", receiver);
     return -1;
 }
 
@@ -52,7 +47,7 @@ void validate_username(char* username){
         printf("Invalid username\n");
         exit(0);
     }
-    if(is_online(get_queue_name(username)) == 1){
+    if(is_online(username) == 1){
         printf("Invalid username\n");
         exit(0);
     }
@@ -61,7 +56,7 @@ void validate_username(char* username){
 int is_message(char* str){
     regex_t regex;
 
-    if (regcomp(&regex , ".*:.*:.*", REG_EXTENDED|REG_NOSUB) != 0) {
+    if (regcomp(&regex , ".*:.*", REG_EXTENDED|REG_NOSUB) != 0) {
 		fprintf(stderr,"erro regcomp\n");
 		exit(1);
 	}
@@ -96,69 +91,67 @@ char* get_receiver(char* raw){
     return receiver;
 }
 
+char* get_sender(char* raw){
+    char* sender;
+    char* tmp = malloc(strlen(raw));
+    tmp = strcpy(tmp, raw);
+
+    sender = strtok(tmp, ":");
+    return sender;
+}
+
+char* get_message_id(char* raw){
+    char* message_id;
+    char* tmp = malloc(strlen(raw));
+    tmp = strcpy(tmp, raw);
+
+    strtok(tmp, ":");
+    strtok(NULL, ":");
+    message_id = strtok(NULL, ":");
+    remove_bars(message_id);
+    
+    return message_id;
+}
+
+char* remove_bars(char* str){
+    char *pr = str, *pw = str;
+    while (*pr) {
+        *pw = *pr++;
+        pw += (*pw != '|');
+    }
+    *pw = '\0';
+}
+
 void show_message(Message* message){
-    if(strcmp(message->receiver, "all") == 0){
-        printf("\nBroadcast de %s: %s\n", message->sender, message->content);
+    if(strcmp(message->to, "all") == 0){
+        printf("\nBroadcast de %s: %s\n", message->from, message->content);
     }else{
-        printf("\n%s: %s\n", message->sender, message->content);
+        printf("\n%s: %s\n", message->from, message->content);
     }
 }
 
-resend_queue_t* new_resend_queue(){
-    resend_queue_t* new_q = (resend_queue_t*) malloc(sizeof(resend_queue_t));
-    new_q->size = 0;
-
-    return new_q;
-}
-
-void add_to_queue(resend_queue_t* q, queued_msg_t msg){
-    q->elements[q->size] = msg;
-    q->size++;
-}
-
 int is_auth_request(char* msg){
-    //regex_t regex;
+    regex_t regex;
     if(strstr(msg, "|") != NULL){
         return 1;
     }else{
         return 0;
     }
-    //if (regcomp(&regex , "/^.*:.*:\|.*\|$/g", REG_EXTENDED|REG_NOSUB) != 0) {
-	//	fprintf(stderr,"erro regcomp\n");
-	//	exit(1);
-	//}
+    if (regcomp(&regex , "^.*:.*:\\|.*\\|$", REG_EXTENDED|REG_NOSUB) != 0) {
+		fprintf(stderr,"erro regcomp\n");
+		exit(1);
+	}
 
-    //if ((regexec(&regex, msg, 0, (regmatch_t *)NULL, 0)) == 0)
-	//	return 1;
-	//else
-//		return 0;
-}
-
-char* reply(char* msg){
-    char* msg_tmp = malloc(strlen(msg));
-    char* usr1_tmp = malloc(10);
-    char* usr2_tmp = malloc(10);
-    char* msg_content = malloc(20);
-
-    strcpy(msg_tmp, msg);
-    usr1_tmp = strtok(msg_tmp, ":");
-    usr2_tmp = strtok(NULL, ":");
-    msg_content = strtok(NULL, ":");
-
-    char* msg_reply = malloc(strlen(msg));
-    strcat(msg_reply, usr2_tmp);
-    strcat(msg_reply, ":");
-    strcat(msg_reply, usr1_tmp);
-    strcat(msg_reply, ":");
-    strcat(msg_reply, msg_content);
-
-    return msg_reply;
+    if ((regexec(&regex, msg, 0, (regmatch_t *)NULL, 0)) == 0)
+		return 1;
+	else
+		return 0;
 }
 
 int is_authentic(char* str){
     regex_t regex;
 
-    if (regcomp(&regex , "^.*:.*:\|.*\|Y\|$", 0) != 0) {
+    if (regcomp(&regex , "^.*:.*:\\|.*\\|Y\\|$", REG_EXTENDED|REG_NOSUB) != 0) {
 		fprintf(stderr,"erro regcomp\n");
 		exit(1);
 	}
@@ -169,9 +162,54 @@ int is_authentic(char* str){
 		return 0;
 }
 
+int is_auth_response(char* msg){
+    regex_t regex;
+
+    if (regcomp(&regex , "^.*:.*:\\|.*\\|(Y|N)\\|$", REG_EXTENDED|REG_NOSUB) != 0) {
+		fprintf(stderr,"erro regcomp\n");
+		exit(1);
+	}
+
+    if ((regexec(&regex, msg, 0, (regmatch_t *)NULL, 0)) == 0)
+		return 1;
+	else
+		return 0;
+}
+
 void request_auth(Message* message){
-    fprintf(stderr, "aaadasd %s\n", message->id);
-    Message* auth_message = invert_sender(message);
-    auth_message->raw = new_auth_message(auth_message);
-    send_message(auth_message);
+    Message* inverted = invert_sender(message);
+    char* auth_message = new_auth_message(inverted);
+    raw_send(inverted->to, auth_message);
+}
+
+void failed_auth(char* auth_message){
+    char* failed_message = malloc(strlen(auth_message) + 3);
+    strcpy(failed_message, auth_message);
+    strcat(failed_message, "N|\0");
+
+    raw_send(get_receiver(auth_message), failed_message);
+}
+
+void success_auth(char* auth_message){
+    char* inverted_auth_msg = raw_invert_sender(auth_message);
+    char* success_message = malloc(strlen(inverted_auth_msg) + 3);
+    strcpy(success_message, inverted_auth_msg);
+    strcat(success_message, "Y|\0");
+    
+    raw_send(get_receiver(inverted_auth_msg), success_message);
+}
+
+char* raw_invert_sender(char* message){
+    char* tmp = malloc(strlen(message));
+    strcpy(tmp, message);
+    char* receiver = strtok(tmp, ":");
+    char* sender = strtok(NULL, ":");
+    char* content = strtok(NULL, ":");
+
+    char* result = malloc(strlen(message));
+    strcpy(result, sender);
+    strcat(result, ":");
+    strcat(result, receiver);
+    strcat(result, ":");
+    strcat(result, content);
 }

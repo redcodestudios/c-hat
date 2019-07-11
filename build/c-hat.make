@@ -89,6 +89,7 @@ OBJECTS := \
 	$(OBJDIR)/client.o \
 	$(OBJDIR)/main.o \
 	$(OBJDIR)/message.o \
+	$(OBJDIR)/user.o \
 	$(OBJDIR)/old_main.o \
 	$(OBJDIR)/chat.o \
 	$(OBJDIR)/queue_utils.o \
@@ -159,6 +160,9 @@ $(OBJDIR)/main.o: ../src/main.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/message.o: ../src/message.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/user.o: ../src/user.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/old_main.o: ../src/old_main.c

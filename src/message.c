@@ -1,5 +1,61 @@
 #include "inc/message.h"
 
+Message* new_message(char* raw){
+    char* tmp = malloc(strlen(raw));
+
+    Message* new_msg = malloc(sizeof(Message));
+    tmp = strcpy(tmp, raw);
+
+    char* sender = strtok(tmp, ":");
+    char* msg_id = malloc(32);
+    sprintf(msg_id, "%d", gen_message_id(sender, raw));
+
+    char* receiver = strtok(NULL, ":");
+    char* content = strtok(NULL, ":");
+    char* msg_repr = make_repr(sender, receiver, content, msg_id);
+
+    new_msg->id = msg_id;
+    new_msg->from = sender;
+    new_msg->to = receiver;
+    new_msg->content = content;
+    new_msg->raw = raw;
+    new_msg->repr = msg_repr;
+
+    return new_msg;
+}
+
+Message* new_message_with_id(char* raw){
+    char* tmp = malloc(strlen(raw));
+
+    Message* new_msg = malloc(sizeof(Message));
+    tmp = strcpy(tmp, raw);
+    
+    char* sender = strtok(tmp, ":");
+    char* receiver = strtok(NULL, ":");
+    char* content = strtok(NULL, ":");
+    char* msg_id = strtok(NULL, ":");
+
+    new_msg->id = msg_id;
+    new_msg->from = sender;
+    new_msg->to = receiver;
+    new_msg->content = content;
+    new_msg->raw = raw;
+    new_msg->repr = make_repr(sender, receiver, content, msg_id);
+
+    return new_msg;
+}
+
+Message* invert_sender(Message* message){
+    Message* inverted = malloc(sizeof(Message));
+    inverted->id = message->id;
+    inverted->from = message->to;
+    inverted->to = message->from;
+    inverted->content = message->content;
+    inverted->raw = message->raw;
+
+    return inverted;
+}
+
 int gen_message_id(char* username, char* message){
     srand(time(NULL));
     int hash = 0;
@@ -16,86 +72,39 @@ int gen_message_id(char* username, char* message){
     return (hash + salt);
 }
 
-Message* new_message(char* raw){
-    char* tmp = malloc(strlen(raw));
-    char* sender = malloc(10);
-    char* receiver = malloc(10);
-    char* content = malloc(500);
-    char* msg_id = malloc(32);
-
-    Message* new_msg = malloc(sizeof(Message));
-    tmp = strcpy(tmp, raw);
-    
-    sender = strtok(tmp, ":");
-    receiver = strtok(NULL, ":");
-    content = strtok(NULL, ":");
-
-    int int_id = gen_message_id(sender, content);
-    sprintf(msg_id, "%d", int_id);
-
-    new_msg->id = msg_id;
-    new_msg->sender = sender;
-    new_msg->receiver = receiver;
-    new_msg->content = content;
-    new_msg->raw = raw;
-
-    return new_msg;
-}
-
-Message* new_message_with_id(char* raw){
-    char* tmp = malloc(strlen(raw));
-    char* sender = malloc(10);
-    char* receiver = malloc(10);
-    char* content = malloc(500);
-    char* msg_id = malloc(32);
-    char* raw_msg_id = malloc(32);
-
-    Message* new_msg = malloc(sizeof(Message));
-    tmp = strcpy(tmp, raw);
-    
-    sender = strtok(tmp, ":");
-    receiver = strtok(NULL, ":");
-    content = strtok(NULL, ":");
-    raw_msg_id = strtok(NULL, ":");
-    printf("raw msg %s\n", raw);
-    for(int i=0; i<strlen(raw_msg_id); i++){
-        if(raw_msg_id[i] != '|'){
-            msg_id += raw_msg_id[i];
-        }
-    }
-    msg_id[strlen(raw_msg_id)] = '\0';
-
-    new_msg->id = msg_id;
-    new_msg->sender = sender;
-    new_msg->receiver = receiver;
-    new_msg->content = content;
-    new_msg->raw = raw;
-
-    return new_msg;
-}
-
-Message* invert_sender(Message* message){
-    Message* inverted = malloc(sizeof(Message));
-    inverted->id = message->id;
-    inverted->sender = message->receiver;
-    inverted->receiver = message->sender;
-    inverted->content = message->content;
-    inverted->raw = message->raw;
-
-    return inverted;
-}
-
 char* new_auth_message(Message* message){ 
     char* raw_message = malloc(100);
 
-    strcpy(raw_message, message->sender);
+    strcpy(raw_message, message->from);
 
     strcat(raw_message, ":");
-    strcat(raw_message, message->receiver);
+    strcat(raw_message, message->to);
     strcat(raw_message, ":|");
     strcat(raw_message, message->id);
     strcat(raw_message, "|");
 
-    printf("new auth message %s\n", raw_message);
     return raw_message;
+}
+
+char* make_repr(char* sender, char* receiver, char* content, char* msg_id){
+    int separator_len = 3;
+    char* repr = malloc(
+        strlen(sender) +
+        strlen(receiver) +
+        strlen(content) +
+        strlen(msg_id) +
+        separator_len + 1
+    );
+
+    strcpy(repr, sender);
+    strcat(repr, ":");
+    strcat(repr, receiver);
+    strcat(repr, ":");
+    strcat(repr, content);
+    strcat(repr, ":");
+    strcat(repr, msg_id);
+
+    repr[strlen(repr)] = '\0';
+
+    return repr;
 }
