@@ -25,6 +25,11 @@ pthread_mutex_t lock_send;
 int main(int argc, char **argv){
     signal(SIGINT, exit_handler);
 
+    if(argc < 2){
+        printf("Blank username is not valid!\n");
+        exit(0);
+    }
+
     char* username = argv[1];
 
     validate_username(username);
