@@ -132,11 +132,6 @@ void show_message(Message* message){
 
 int is_auth_request(char* msg){
     regex_t regex;
-    if(strstr(msg, "|") != NULL){
-        return 1;
-    }else{
-        return 0;
-    }
     if (regcomp(&regex , "^.*:.*:\\|.*\\|$", REG_EXTENDED|REG_NOSUB) != 0) {
 		fprintf(stderr,"erro regcomp\n");
 		exit(1);
