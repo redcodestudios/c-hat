@@ -86,7 +86,6 @@ int main(int argc, char **argv){
 }
 
 void sender_handler(int signum){
-    fprintf(stderr, "sending %s\n", MESSAGE_BUFFER->content);
     if(send_message(USER, MESSAGE_BUFFER) < 0){
         for(int i=0; i<3; i++){
             sleep(10);
